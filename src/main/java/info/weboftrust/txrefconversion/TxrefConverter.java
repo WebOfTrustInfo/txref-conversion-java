@@ -1,15 +1,6 @@
 package info.weboftrust.txrefconversion;
 
 import java.io.IOException;
-import java.io.InputStream;
-import java.net.URI;
-import java.net.URLConnection;
-
-import org.apache.commons.io.IOUtils;
-
-import com.google.gson.Gson;
-import com.google.gson.JsonObject;
-import com.google.gson.JsonPrimitive;
 
 import info.weboftrust.txrefconversion.Bech32.HrpAndData;
 
@@ -21,9 +12,9 @@ public class TxrefConverter {
 	public static final byte[] TXREF_BECH32_HRP_MAINNET = "tx".getBytes();
 	public static final byte[] TXREF_BECH32_HRP_TESTNET = "txtest".getBytes();
 
-	private static final Gson gson = new Gson();
+	private static BlockchainSource blockchainSource = new BlockcypherAPIBlockchainSource();
 
-	public static String txrefEncode(Chain chain, long blockHeight, long txPos) {
+	public static String txrefEncode(Chain chain, long blockHeight, long blockIndex) {
 
 		byte magic = chain == Chain.MAINNET ? MAGIC_BTC_MAINNET : MAGIC_BTC_TESTNET;
 		byte[] prefix = chain == Chain.MAINNET ? TXREF_BECH32_HRP_MAINNET : TXREF_BECH32_HRP_TESTNET;
@@ -34,8 +25,8 @@ public class TxrefConverter {
 
 		shortId[0] = magic;
 
-		if ((nonStandard && (blockHeight > 0x1FFFFF || txPos > 0x1FFF || magic > 0x1F)) ||
-				(nonStandard && (blockHeight > 0x3FFFFFF || txPos > 0x3FFFF || magic > 0x1F))) {
+		if ((nonStandard && (blockHeight > 0x1FFFFF || blockIndex > 0x1FFF || magic > 0x1F)) ||
+				(nonStandard && (blockHeight > 0x3FFFFFF || blockIndex > 0x3FFFF || magic > 0x1F))) {
 
 			return null;
 		}
@@ -57,15 +48,15 @@ public class TxrefConverter {
 			shortId[5] |= ((blockHeight & 0xF80000) >> 19);
 			shortId[6] |= ((blockHeight & 0x3000000) >> 24);
 
-			shortId[6] |= ((txPos & 0x7) << 2);
-			shortId[7] |= ((txPos & 0xF8) >> 3);
-			shortId[8] |= ((txPos & 0x1F00) >> 8);
-			shortId[9] |= ((txPos & 0x3E000) >> 13);
+			shortId[6] |= ((blockIndex & 0x7) << 2);
+			shortId[7] |= ((blockIndex & 0xF8) >> 3);
+			shortId[8] |= ((blockIndex & 0x1F00) >> 8);
+			shortId[9] |= ((blockIndex & 0x3E000) >> 13);
 		} else {
 			shortId[5] |= ((blockHeight & 0x180000) >> 19);
-			shortId[5] |= ((txPos & 0x7) << 2);
-			shortId[6] |= ((txPos & 0xF8) >> 3);
-			shortId[7] |= ((txPos & 0x1F00) >> 8);
+			shortId[5] |= ((blockIndex & 0x7) << 2);
+			shortId[6] |= ((blockIndex & 0xF8) >> 3);
+			shortId[7] |= ((blockIndex & 0x1F00) >> 8);
 		}
 
 		String result = Bech32.bech32Encode(prefix, shortId);
@@ -80,7 +71,12 @@ public class TxrefConverter {
 		return finalResult;
 	};
 
-	public static BlockLocation txrefDecode(String bech32Tx) {
+	public static String txrefEncode(ChainAndBlockLocation chainAndBlockLocation) {
+
+		return txrefEncode(chainAndBlockLocation.getChain(), chainAndBlockLocation.getBlockHeight(), chainAndBlockLocation.getBlockIndex());
+	}
+
+	public static ChainAndBlockLocation txrefDecode(String bech32Tx) {
 
 		String stripped = bech32Tx.replace("-", "");
 
@@ -118,72 +114,24 @@ public class TxrefConverter {
 
 		Chain chain = chainMarker == MAGIC_BTC_MAINNET ? Chain.MAINNET : Chain.TESTNET;
 
-		return new BlockLocation(blockHeight, blockIndex, chain);
-	}
-
-	private static JsonObject parseTxDetails(JsonObject txData, Chain chain, String txid) {
-
-		long blockHeight = txData.get("block_height").getAsLong();
-		long blockIndex = txData.get("block_index").getAsLong();
-
-		JsonObject jsonObject = new JsonObject();
-		jsonObject.add("blockHeight", new JsonPrimitive(blockHeight));
-		jsonObject.add("blockIndex", new JsonPrimitive(blockIndex));
-
-		return jsonObject;
-	}
-
-	private static JsonObject getTxDetails(String txid, Chain chain) throws IOException {
-
-		URI uri;
-		if (chain == Chain.MAINNET) {
-			uri = URI.create("https://api.blockcypher.com/v1/btc/main/txs/" + txid + "?limit=500");
-		} else {
-			uri = URI.create("https://api.blockcypher.com/v1/btc/test3/txs/" + txid + "?limit=500");
-		}
-
-		JsonObject txData = retrieveJson(uri);
-
-		return parseTxDetails(txData, chain, txid);
+		return new ChainAndBlockLocation(chain, blockHeight, blockIndex);
 	}
 
 	public static String txidToTxref(String txid, Chain chain) throws IOException {
 
-		JsonObject txDetails = getTxDetails(txid, chain);
+		ChainAndBlockLocation blockLocation = blockchainSource.getChainAndBlockLocation(chain, txid);
 
-		String txref = txrefEncode(chain, txDetails.get("blockHeight").getAsLong(), txDetails.get("blockIndex").getAsLong());
+		String txref = txrefEncode(blockLocation);
 		return txref;
 	}
 
-	public static TxidAndChain txrefToTxid(String txref) throws IOException {
+	public static ChainAndTxid txrefToTxid(String txref) throws IOException {
 
-		BlockLocation blockLocation = txrefDecode(txref);
-		if (blockLocation == null) throw new IllegalArgumentException("Could not decode txref " + txref);
+		ChainAndBlockLocation chainAndBlockLocation = txrefDecode(txref);
+		if (chainAndBlockLocation == null) throw new IllegalArgumentException("Could not decode txref " + txref);
 
-		long blockHeight = blockLocation.blockHeight;
-		long blockIndex = blockLocation.blockIndex;
-		Chain chain = blockLocation.chain;
-
-		URI uri;
-		if (chain == Chain.MAINNET) {
-			uri = URI.create("https://api.blockcypher.com/v1/btc/main/blocks/" + blockHeight + "?txstart=" + blockIndex + "&limit=1");
-		} else {
-			uri = URI.create("https://api.blockcypher.com/v1/btc/test3/blocks/" + blockHeight + "?txstart=" + blockIndex + "&limit=1");
-		}
-
-		JsonObject txData = retrieveJson(uri);
-
-		return new TxidAndChain(txData.get("txids").getAsJsonArray().get(0).getAsString(), chain);
-	}
-
-	private static JsonObject retrieveJson(URI uri) throws IOException {
-
-		URLConnection con = uri.toURL().openConnection();
-		InputStream in = con.getInputStream();
-		String encoding = con.getContentEncoding();
-		encoding = encoding == null ? "UTF-8" : encoding;
-
-		return gson.fromJson(IOUtils.toString(in, encoding), JsonObject.class);
+		String txid = blockchainSource.getTxid(chainAndBlockLocation);
+		return new ChainAndTxid(chainAndBlockLocation.getChain(), txid);
 	}
 
 	public static enum Chain {
@@ -192,25 +140,25 @@ public class TxrefConverter {
 		TESTNET
 	}
 
-	public static class BlockLocation {
+	public static class ChainAndBlockLocation {
 
+		public Chain chain;
 		public long blockHeight;
 		public long blockIndex;
-		public Chain chain;
 
-		public BlockLocation(long blockHeight, long blockIndex, Chain chain) { this.blockHeight = blockHeight; this.blockIndex = blockIndex; this.chain = chain; }
+		public ChainAndBlockLocation(Chain chain, long blockHeight, long blockIndex) { this.chain = chain; this.blockHeight = blockHeight; this.blockIndex = blockIndex; }
+		public Chain getChain() { return this.chain; }
 		public long getBlockHeight() { return this.blockHeight; }
 		public long getBlockIndex() { return this.blockIndex; }
-		public Chain getChain() { return this.chain; }
 	}
 
-	public static class TxidAndChain {
+	public static class ChainAndTxid {
 
-		public String txid;
 		public Chain chain;
+		public String txid;
 
-		public TxidAndChain(String txid, Chain chain) { this.txid = txid; this.chain = chain; }
-		public String getTxid() { return this.txid; }
+		public ChainAndTxid(Chain chain, String txid) { this.chain = chain; this.txid = txid; }
 		public Chain getChain() { return this.chain; }
+		public String getTxid() { return this.txid; }
 	}
 }

@@ -1,8 +1,8 @@
 package info.weboftrust.txrefconversion;
 
-import info.weboftrust.txrefconversion.TxrefConverter.BlockLocation;
 import info.weboftrust.txrefconversion.TxrefConverter.Chain;
-import info.weboftrust.txrefconversion.TxrefConverter.TxidAndChain;
+import info.weboftrust.txrefconversion.TxrefConverter.ChainAndBlockLocation;
+import info.weboftrust.txrefconversion.TxrefConverter.ChainAndTxid;
 import junit.framework.TestCase;
 
 public class TxrefConverterTest extends TestCase {
@@ -46,10 +46,10 @@ public class TxrefConverterTest extends TestCase {
 
 		for (Object[] test : tests1) {
 
-			BlockLocation result = TxrefConverter.txrefDecode((String) test[1]);
+			ChainAndBlockLocation result = TxrefConverter.txrefDecode((String) test[1]);
+			assertEquals((Chain) test[0], result.getChain());
 			assertEquals((long) test[2], result.getBlockHeight());
 			assertEquals((long) test[3], result.getBlockIndex());
-			assertEquals((Chain) test[0], result.getChain());
 		}
 	}
 
@@ -71,9 +71,9 @@ public class TxrefConverterTest extends TestCase {
 
 		for (Object[] test : tests2) {
 
-			TxidAndChain result = TxrefConverter.txrefToTxid((String) test[2]);
-			assertEquals((String) test[1], result.getTxid());
+			ChainAndTxid result = TxrefConverter.txrefToTxid((String) test[2]);
 			assertEquals((Chain) test[0], result.getChain());
+			assertEquals((String) test[1], result.getTxid());
 		}
 	}
 }
