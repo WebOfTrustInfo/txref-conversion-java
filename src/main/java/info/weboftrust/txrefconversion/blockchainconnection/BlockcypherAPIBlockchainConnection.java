@@ -1,4 +1,4 @@
-package info.weboftrust.txrefconversion;
+package info.weboftrust.txrefconversion.blockchainconnection;
 
 import java.io.IOException;
 import java.io.InputStream;
@@ -13,9 +13,20 @@ import com.google.gson.JsonObject;
 import info.weboftrust.txrefconversion.TxrefConverter.Chain;
 import info.weboftrust.txrefconversion.TxrefConverter.ChainAndBlockLocation;
 
-public class BlockcypherAPIBlockchainSource implements BlockchainSource {
+public class BlockcypherAPIBlockchainConnection extends AbstractBlockchainConnection implements BlockchainConnection {
 
 	private static final Gson gson = new Gson();
+
+	private static final BlockcypherAPIBlockchainConnection instance = new BlockcypherAPIBlockchainConnection();
+
+	private BlockcypherAPIBlockchainConnection() {
+
+	}
+
+	public static BlockcypherAPIBlockchainConnection get() {
+
+		return instance;
+	}
 
 	@Override
 	public String getTxid(Chain chain, long blockHeight, long blockIndex) throws IOException {
@@ -29,15 +40,10 @@ public class BlockcypherAPIBlockchainSource implements BlockchainSource {
 
 		JsonObject txData = retrieveJson(uri);
 		String txid = txData.get("txids").getAsJsonArray().get(0).getAsString();
+
 		return txid;
 	}
 
-	@Override
-	public String getTxid(ChainAndBlockLocation chainAndBlockLocation) throws IOException {
-
-		return getTxid(chainAndBlockLocation.getChain(), chainAndBlockLocation.getBlockHeight(), chainAndBlockLocation.getBlockIndex());
-	}
-	
 	@Override
 	public ChainAndBlockLocation getChainAndBlockLocation(Chain chain, String txid) throws IOException {
 
@@ -51,6 +57,7 @@ public class BlockcypherAPIBlockchainSource implements BlockchainSource {
 		JsonObject txData = retrieveJson(uri);
 		long blockHeight = txData.get("block_height").getAsLong();
 		long blockIndex = txData.get("block_index").getAsLong();
+
 		return new ChainAndBlockLocation(chain, blockHeight, blockIndex);
 	}
 

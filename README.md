@@ -34,7 +34,7 @@ Dependency:
 		
 		public static void main(String[] args) throws Exception {
 	
-			String txref = TxrefConverter.txidToTxref("016b71d9ec62709656504f1282bb81f7acf998df025e54bd68ea33129d8a425b", Chain.MAINNET);
+			String txref = TxrefConverter.get().txidToTxref("016b71d9ec62709656504f1282bb81f7acf998df025e54bd68ea33129d8a425b", Chain.MAINNET);
 			System.out.println(txref); // expect "tx1-rk63-uvxf-9pqc-sy"
 		}
 	}
@@ -48,7 +48,7 @@ Dependency:
 		
 		public static void main(String[] args) throws Exception {
 	
-			TxidAndChain txidAndChain = TxrefConverter.txrefToTxid("txtest1-xyv2-xzyq-qqm5-tyke");
+			TxidAndChain txidAndChain = TxrefConverter.get().txrefToTxid("txtest1-xyv2-xzyq-qqm5-tyke");
 			System.out.println(txidAndChain.getTxid()); // expect "f8cdaff3ebd9e862ed5885f8975489090595abe1470397f79780ead1c7528107"
 			System.out.println(txidAndChain.getChain()); // expect "MAINNET"
 		}

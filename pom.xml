@@ -83,6 +83,18 @@
 			<scope>test</scope>
 		</dependency>
 		<dependency>
+			<groupId>wf.bitcoin</groupId>
+			<artifactId>JavaBitcoindRpcClient</artifactId>
+			<version>0.9.14</version>
+			<scope>compile</scope>
+		</dependency>
+		<dependency>
+			<groupId>org.bitcoinj</groupId>
+			<artifactId>bitcoinj-core</artifactId>
+			<version>0.14.4</version>
+			<scope>compile</scope>
+		</dependency>
+		<dependency>
 			<groupId>com.google.code.gson</groupId>
 			<artifactId>gson</artifactId>
 			<version>2.2.4</version>

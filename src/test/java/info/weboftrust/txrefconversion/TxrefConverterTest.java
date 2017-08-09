@@ -3,9 +3,17 @@ package info.weboftrust.txrefconversion;
 import info.weboftrust.txrefconversion.TxrefConverter.Chain;
 import info.weboftrust.txrefconversion.TxrefConverter.ChainAndBlockLocation;
 import info.weboftrust.txrefconversion.TxrefConverter.ChainAndTxid;
+import info.weboftrust.txrefconversion.blockchainconnection.BlockcypherAPIBlockchainConnection;
 import junit.framework.TestCase;
 
 public class TxrefConverterTest extends TestCase {
+
+	private static TxrefConverter txrefConverter;
+
+	static {
+
+		txrefConverter = new TxrefConverter(BlockcypherAPIBlockchainConnection.get());
+	}
 
 	@Override
 	protected void setUp() throws Exception {
@@ -37,7 +45,7 @@ public class TxrefConverterTest extends TestCase {
 
 		for (Object[] test : tests1) {
 
-			String result = TxrefConverter.txrefEncode((Chain) test[0], (long) test[2], (long) test[3]);
+			String result = txrefConverter.txrefEncode((Chain) test[0], (long) test[2], (long) test[3]);
 			assertEquals((String) test[1], result);
 		}
 	}
@@ -46,7 +54,7 @@ public class TxrefConverterTest extends TestCase {
 
 		for (Object[] test : tests1) {
 
-			ChainAndBlockLocation result = TxrefConverter.txrefDecode((String) test[1]);
+			ChainAndBlockLocation result = txrefConverter.txrefDecode((String) test[1]);
 			assertEquals((Chain) test[0], result.getChain());
 			assertEquals((long) test[2], result.getBlockHeight());
 			assertEquals((long) test[3], result.getBlockIndex());
@@ -61,8 +69,8 @@ public class TxrefConverterTest extends TestCase {
 	public void testTxidToTxref() throws Exception {
 
 		for (Object[] test : tests2) {
-			
-			String result = TxrefConverter.txidToTxref((String) test[1], (Chain) test[0]);
+
+			String result = txrefConverter.txidToTxref((String) test[1], (Chain) test[0]);
 			assertEquals((String) test[2], result);
 		}
 	}
@@ -71,7 +79,7 @@ public class TxrefConverterTest extends TestCase {
 
 		for (Object[] test : tests2) {
 
-			ChainAndTxid result = TxrefConverter.txrefToTxid((String) test[2]);
+			ChainAndTxid result = txrefConverter.txrefToTxid((String) test[2]);
 			assertEquals((Chain) test[0], result.getChain());
 			assertEquals((String) test[1], result.getTxid());
 		}

@@ -3,6 +3,8 @@ package info.weboftrust.txrefconversion;
 import java.io.IOException;
 
 import info.weboftrust.txrefconversion.Bech32.HrpAndData;
+import info.weboftrust.txrefconversion.blockchainconnection.BlockchainConnection;
+import info.weboftrust.txrefconversion.blockchainconnection.BlockcypherAPIBlockchainConnection;
 
 public class TxrefConverter {
 
@@ -12,9 +14,26 @@ public class TxrefConverter {
 	public static final byte[] TXREF_BECH32_HRP_MAINNET = "tx".getBytes();
 	public static final byte[] TXREF_BECH32_HRP_TESTNET = "txtest".getBytes();
 
-	private static BlockchainSource blockchainSource = new BlockcypherAPIBlockchainSource();
+	private final BlockchainConnection blockchainConnection;
 
-	public static String txrefEncode(Chain chain, long blockHeight, long blockIndex) {
+	private static final TxrefConverter instance = new TxrefConverter();
+
+	public TxrefConverter(BlockchainConnection blockchainConnection) {
+
+		this.blockchainConnection = blockchainConnection;
+	}
+
+	public TxrefConverter() {
+
+		this(BlockcypherAPIBlockchainConnection.get());
+	}
+
+	public static TxrefConverter get() {
+
+		return instance;
+	}
+
+	public String txrefEncode(Chain chain, long blockHeight, long blockIndex) {
 
 		byte magic = chain == Chain.MAINNET ? MAGIC_BTC_MAINNET : MAGIC_BTC_TESTNET;
 		byte[] prefix = chain == Chain.MAINNET ? TXREF_BECH32_HRP_MAINNET : TXREF_BECH32_HRP_TESTNET;
@@ -71,12 +90,12 @@ public class TxrefConverter {
 		return finalResult;
 	};
 
-	public static String txrefEncode(ChainAndBlockLocation chainAndBlockLocation) {
+	public String txrefEncode(ChainAndBlockLocation chainAndBlockLocation) {
 
 		return txrefEncode(chainAndBlockLocation.getChain(), chainAndBlockLocation.getBlockHeight(), chainAndBlockLocation.getBlockIndex());
 	}
 
-	public static ChainAndBlockLocation txrefDecode(String bech32Tx) {
+	public ChainAndBlockLocation txrefDecode(String bech32Tx) {
 
 		String stripped = bech32Tx.replace("-", "");
 
@@ -117,20 +136,20 @@ public class TxrefConverter {
 		return new ChainAndBlockLocation(chain, blockHeight, blockIndex);
 	}
 
-	public static String txidToTxref(String txid, Chain chain) throws IOException {
+	public String txidToTxref(String txid, Chain chain) throws IOException {
 
-		ChainAndBlockLocation blockLocation = blockchainSource.getChainAndBlockLocation(chain, txid);
+		ChainAndBlockLocation blockLocation = this.blockchainConnection.getChainAndBlockLocation(chain, txid);
 
 		String txref = txrefEncode(blockLocation);
 		return txref;
 	}
 
-	public static ChainAndTxid txrefToTxid(String txref) throws IOException {
+	public ChainAndTxid txrefToTxid(String txref) throws IOException {
 
 		ChainAndBlockLocation chainAndBlockLocation = txrefDecode(txref);
 		if (chainAndBlockLocation == null) throw new IllegalArgumentException("Could not decode txref " + txref);
 
-		String txid = blockchainSource.getTxid(chainAndBlockLocation);
+		String txid = this.blockchainConnection.getTxid(chainAndBlockLocation);
 		return new ChainAndTxid(chainAndBlockLocation.getChain(), txid);
 	}
 
