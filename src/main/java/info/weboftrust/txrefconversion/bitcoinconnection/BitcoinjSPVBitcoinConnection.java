@@ -11,7 +11,7 @@ public class BitcoinjSPVBitcoinConnection extends AbstractBitcoinConnection impl
 
 	private static final BitcoinjSPVBitcoinConnection instance = new BitcoinjSPVBitcoinConnection();
 
-	protected final BlockChain blockChain;
+	protected BlockChain blockChain;
 
 	public BitcoinjSPVBitcoinConnection(BlockChain blockChain) {
 
@@ -38,5 +38,19 @@ public class BitcoinjSPVBitcoinConnection extends AbstractBitcoinConnection impl
 	public ChainAndBlockLocation getChainAndBlockLocation(Chain chain, String txid) throws IOException {
 
 		throw new RuntimeException("Not implemented.");
+	}
+
+	/*
+	 * Getters and setters
+	 */
+
+	public BlockChain getBlockChain() {
+
+		return this.blockChain;
+	}
+
+	public void setBlockChain(BlockChain blockChain) {
+
+		this.blockChain = blockChain;
 	}
 }

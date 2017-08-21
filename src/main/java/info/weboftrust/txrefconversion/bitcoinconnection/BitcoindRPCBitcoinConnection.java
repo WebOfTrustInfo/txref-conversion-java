@@ -14,8 +14,8 @@ public class BitcoindRPCBitcoinConnection extends AbstractBitcoinConnection impl
 
 	private static final BitcoindRPCBitcoinConnection instance = new BitcoindRPCBitcoinConnection();
 
-	protected final BitcoinJSONRPCClient bitcoindRpcClientMainnet;
-	protected final BitcoinJSONRPCClient bitcoindRpcClientTestnet;
+	protected BitcoinJSONRPCClient bitcoindRpcClientMainnet;
+	protected BitcoinJSONRPCClient bitcoindRpcClientTestnet;
 
 	public BitcoindRPCBitcoinConnection(URL rpcUrlMainnet, URL rpcUrlTestnet) {
 
@@ -64,5 +64,29 @@ public class BitcoindRPCBitcoinConnection extends AbstractBitcoinConnection impl
 		if (blockIndex == block.size()) return null;
 
 		return new ChainAndBlockLocation(chain, blockHeight, blockIndex);
+	}
+
+	/*
+	 * Getters and setters
+	 */
+
+	public BitcoinJSONRPCClient getBitcoindRpcClientMainnet() {
+
+		return this.bitcoindRpcClientMainnet;
+	}
+
+	public void setBitcoindRpcClientMainnet(BitcoinJSONRPCClient bitcoindRpcClientMainnet) {
+
+		this.bitcoindRpcClientMainnet = bitcoindRpcClientMainnet;
+	}
+
+	public BitcoinJSONRPCClient getBitcoindRpcClientTestnet() {
+
+		return this.bitcoindRpcClientTestnet;
+	}
+
+	public void setBitcoindRpcClientTestnet(BitcoinJSONRPCClient bitcoindRpcClientTestnet) {
+
+		this.bitcoindRpcClientTestnet = bitcoindRpcClientTestnet;
 	}
 }
