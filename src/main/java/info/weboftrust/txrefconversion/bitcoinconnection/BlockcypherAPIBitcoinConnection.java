@@ -15,11 +15,11 @@ import info.weboftrust.txrefconversion.TxrefConverter.ChainAndBlockLocation;
 
 public class BlockcypherAPIBitcoinConnection extends AbstractBitcoinConnection implements BitcoinConnection {
 
-	private static final Gson gson = new Gson();
-
 	private static final BlockcypherAPIBitcoinConnection instance = new BlockcypherAPIBitcoinConnection();
 
-	private BlockcypherAPIBitcoinConnection() {
+	protected static final Gson gson = new Gson();
+
+	public BlockcypherAPIBitcoinConnection() {
 
 	}
 
@@ -61,7 +61,7 @@ public class BlockcypherAPIBitcoinConnection extends AbstractBitcoinConnection i
 		return new ChainAndBlockLocation(chain, blockHeight, blockIndex);
 	}
 
-	private static JsonObject retrieveJson(URI uri) throws IOException {
+	protected static JsonObject retrieveJson(URI uri) throws IOException {
 
 		URLConnection con = uri.toURL().openConnection();
 		InputStream in = con.getInputStream();

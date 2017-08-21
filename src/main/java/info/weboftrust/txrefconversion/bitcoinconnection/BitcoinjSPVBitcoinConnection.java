@@ -11,14 +11,14 @@ public class BitcoinjSPVBitcoinConnection extends AbstractBitcoinConnection impl
 
 	private static final BitcoinjSPVBitcoinConnection instance = new BitcoinjSPVBitcoinConnection();
 
-	private final BlockChain blockChain;
+	protected final BlockChain blockChain;
 
-	private BitcoinjSPVBitcoinConnection(BlockChain blockChain) {
+	public BitcoinjSPVBitcoinConnection(BlockChain blockChain) {
 
 		this.blockChain = blockChain;
 	}
 
-	private BitcoinjSPVBitcoinConnection() {
+	public BitcoinjSPVBitcoinConnection() {
 
 		this(null);
 	}
