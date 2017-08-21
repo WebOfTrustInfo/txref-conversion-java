@@ -1,4 +1,4 @@
-package info.weboftrust.txrefconversion.blockchainconnection;
+package info.weboftrust.txrefconversion.bitcoinconnection;
 
 import java.io.IOException;
 import java.io.InputStream;
@@ -13,17 +13,17 @@ import com.google.gson.JsonObject;
 import info.weboftrust.txrefconversion.TxrefConverter.Chain;
 import info.weboftrust.txrefconversion.TxrefConverter.ChainAndBlockLocation;
 
-public class BlockcypherAPIBlockchainConnection extends AbstractBlockchainConnection implements BlockchainConnection {
+public class BlockcypherAPIBitcoinConnection extends AbstractBitcoinConnection implements BitcoinConnection {
 
 	private static final Gson gson = new Gson();
 
-	private static final BlockcypherAPIBlockchainConnection instance = new BlockcypherAPIBlockchainConnection();
+	private static final BlockcypherAPIBitcoinConnection instance = new BlockcypherAPIBitcoinConnection();
 
-	private BlockcypherAPIBlockchainConnection() {
+	private BlockcypherAPIBitcoinConnection() {
 
 	}
 
-	public static BlockcypherAPIBlockchainConnection get() {
+	public static BlockcypherAPIBitcoinConnection get() {
 
 		return instance;
 	}

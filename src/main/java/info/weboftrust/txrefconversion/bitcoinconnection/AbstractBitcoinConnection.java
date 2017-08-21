@@ -1,10 +1,10 @@
-package info.weboftrust.txrefconversion.blockchainconnection;
+package info.weboftrust.txrefconversion.bitcoinconnection;
 
 import java.io.IOException;
 
 import info.weboftrust.txrefconversion.TxrefConverter.ChainAndBlockLocation;
 
-public abstract class AbstractBlockchainConnection implements BlockchainConnection {
+public abstract class AbstractBitcoinConnection implements BitcoinConnection {
 
 	@Override
 	public final String getTxid(ChainAndBlockLocation chainAndBlockLocation) throws IOException {

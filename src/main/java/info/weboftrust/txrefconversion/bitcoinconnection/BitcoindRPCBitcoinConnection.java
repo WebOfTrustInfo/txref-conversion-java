@@ -1,4 +1,4 @@
-package info.weboftrust.txrefconversion.blockchainconnection;
+package info.weboftrust.txrefconversion.bitcoinconnection;
 
 import java.io.IOException;
 import java.net.URL;
@@ -10,25 +10,25 @@ import wf.bitcoin.javabitcoindrpcclient.BitcoindRpcClient;
 import wf.bitcoin.javabitcoindrpcclient.BitcoindRpcClient.Block;
 import wf.bitcoin.javabitcoindrpcclient.BitcoindRpcClient.RawTransaction;
 
-public class BitcoindRPCBlockchainConnection extends AbstractBlockchainConnection implements BlockchainConnection {
+public class BitcoindRPCBitcoinConnection extends AbstractBitcoinConnection implements BitcoinConnection {
 
-	private static final BitcoindRPCBlockchainConnection instance = new BitcoindRPCBlockchainConnection();
+	private static final BitcoindRPCBitcoinConnection instance = new BitcoindRPCBitcoinConnection();
 
 	private final BitcoinJSONRPCClient bitcoindRpcClientMainnet;
 	private final BitcoinJSONRPCClient bitcoindRpcClientTestnet;
 
-	public BitcoindRPCBlockchainConnection(URL rpcUrlMainnet, URL rpcUrlTestnet) {
+	public BitcoindRPCBitcoinConnection(URL rpcUrlMainnet, URL rpcUrlTestnet) {
 
 		this.bitcoindRpcClientMainnet = new BitcoinJSONRPCClient(rpcUrlMainnet);
 		this.bitcoindRpcClientTestnet = new BitcoinJSONRPCClient(rpcUrlTestnet);
 	}
 
-	private BitcoindRPCBlockchainConnection() {
+	private BitcoindRPCBitcoinConnection() {
 
 		this(BitcoinJSONRPCClient.DEFAULT_JSONRPC_URL, BitcoinJSONRPCClient.DEFAULT_JSONRPC_TESTNET_URL);
 	}
 
-	public static BitcoindRPCBlockchainConnection get() {
+	public static BitcoindRPCBitcoinConnection get() {
 
 		return instance;
 	}

@@ -1,4 +1,4 @@
-package info.weboftrust.txrefconversion.blockchainconnection;
+package info.weboftrust.txrefconversion.bitcoinconnection;
 
 import java.io.IOException;
 
@@ -7,23 +7,23 @@ import org.bitcoinj.core.BlockChain;
 import info.weboftrust.txrefconversion.TxrefConverter.Chain;
 import info.weboftrust.txrefconversion.TxrefConverter.ChainAndBlockLocation;
 
-public class BitcoinjSPVBlockchainConnection extends AbstractBlockchainConnection implements BlockchainConnection {
+public class BitcoinjSPVBitcoinConnection extends AbstractBitcoinConnection implements BitcoinConnection {
 
-	private static final BitcoinjSPVBlockchainConnection instance = new BitcoinjSPVBlockchainConnection();
+	private static final BitcoinjSPVBitcoinConnection instance = new BitcoinjSPVBitcoinConnection();
 
 	private final BlockChain blockChain;
 
-	private BitcoinjSPVBlockchainConnection(BlockChain blockChain) {
+	private BitcoinjSPVBitcoinConnection(BlockChain blockChain) {
 
 		this.blockChain = blockChain;
 	}
 
-	private BitcoinjSPVBlockchainConnection() {
+	private BitcoinjSPVBitcoinConnection() {
 
 		this(null);
 	}
 
-	public static BitcoinjSPVBlockchainConnection get() {
+	public static BitcoinjSPVBitcoinConnection get() {
 
 		return instance;
 	}

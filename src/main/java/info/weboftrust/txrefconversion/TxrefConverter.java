@@ -3,8 +3,8 @@ package info.weboftrust.txrefconversion;
 import java.io.IOException;
 
 import info.weboftrust.txrefconversion.Bech32.HrpAndData;
-import info.weboftrust.txrefconversion.blockchainconnection.BlockchainConnection;
-import info.weboftrust.txrefconversion.blockchainconnection.BlockcypherAPIBlockchainConnection;
+import info.weboftrust.txrefconversion.bitcoinconnection.BitcoinConnection;
+import info.weboftrust.txrefconversion.bitcoinconnection.BlockcypherAPIBitcoinConnection;
 
 public class TxrefConverter {
 
@@ -14,18 +14,18 @@ public class TxrefConverter {
 	public static final byte[] TXREF_BECH32_HRP_MAINNET = "tx".getBytes();
 	public static final byte[] TXREF_BECH32_HRP_TESTNET = "txtest".getBytes();
 
-	private final BlockchainConnection blockchainConnection;
+	private final BitcoinConnection bitcoinConnection;
 
 	private static final TxrefConverter instance = new TxrefConverter();
 
-	public TxrefConverter(BlockchainConnection blockchainConnection) {
+	public TxrefConverter(BitcoinConnection bitcoinConnection) {
 
-		this.blockchainConnection = blockchainConnection;
+		this.bitcoinConnection = bitcoinConnection;
 	}
 
 	public TxrefConverter() {
 
-		this(BlockcypherAPIBlockchainConnection.get());
+		this(BlockcypherAPIBitcoinConnection.get());
 	}
 
 	public static TxrefConverter get() {
@@ -138,7 +138,7 @@ public class TxrefConverter {
 
 	public String txidToTxref(String txid, Chain chain) throws IOException {
 
-		ChainAndBlockLocation blockLocation = this.blockchainConnection.getChainAndBlockLocation(chain, txid);
+		ChainAndBlockLocation blockLocation = this.bitcoinConnection.getChainAndBlockLocation(chain, txid);
 
 		String txref = txrefEncode(blockLocation);
 		return txref;
@@ -149,7 +149,7 @@ public class TxrefConverter {
 		ChainAndBlockLocation chainAndBlockLocation = txrefDecode(txref);
 		if (chainAndBlockLocation == null) throw new IllegalArgumentException("Could not decode txref " + txref);
 
-		String txid = this.blockchainConnection.getTxid(chainAndBlockLocation);
+		String txid = this.bitcoinConnection.getTxid(chainAndBlockLocation);
 		return new ChainAndTxid(chainAndBlockLocation.getChain(), txid);
 	}
 
