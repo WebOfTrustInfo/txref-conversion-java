@@ -4,7 +4,8 @@ import java.util.Arrays;
 
 public class Bech32 {
 
-	private static final String CHARSET = "qpzry9x8gf2tvdw0s3jn54khce6mua7l";
+	public static final String CHARSET = "qpzry9x8gf2tvdw0s3jn54khce6mua7l";
+	public static final char SEPARATOR = (char) 0x31;	// '1'
 
 	private Bech32() { }
 

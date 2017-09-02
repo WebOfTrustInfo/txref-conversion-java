@@ -11,8 +11,14 @@ public class TxrefConverter {
 	public static final byte MAGIC_BTC_MAINNET = 0x03;
 	public static final byte MAGIC_BTC_TESTNET = 0x06;
 
-	public static final byte[] TXREF_BECH32_HRP_MAINNET = "tx".getBytes();
-	public static final byte[] TXREF_BECH32_HRP_TESTNET = "txtest".getBytes();
+	public static final char MAGIC_BTC_MAINNET_BECH32_CHAR = Bech32.CHARSET.charAt(MAGIC_BTC_MAINNET);	// 'r'
+	public static final char MAGIC_BTC_TESTNET_BECH32_CHAR = Bech32.CHARSET.charAt(MAGIC_BTC_TESTNET);	// 'x'
+
+	public static final String TXREF_BECH32_HRP_MAINNET = "tx";
+	public static final String TXREF_BECH32_HRP_TESTNET = "txtest";
+
+	public static final byte[] TXREF_BECH32_HRP_MAINNET_BYTES = TXREF_BECH32_HRP_MAINNET.getBytes();
+	public static final byte[] TXREF_BECH32_HRP_TESTNET_BYTES = TXREF_BECH32_HRP_TESTNET.getBytes();
 
 	private final BitcoinConnection bitcoinConnection;
 
@@ -36,7 +42,7 @@ public class TxrefConverter {
 	public String txrefEncode(Chain chain, long blockHeight, long blockIndex) {
 
 		byte magic = chain == Chain.MAINNET ? MAGIC_BTC_MAINNET : MAGIC_BTC_TESTNET;
-		byte[] prefix = chain == Chain.MAINNET ? TXREF_BECH32_HRP_MAINNET : TXREF_BECH32_HRP_TESTNET;
+		byte[] prefix = chain == Chain.MAINNET ? TXREF_BECH32_HRP_MAINNET_BYTES : TXREF_BECH32_HRP_TESTNET_BYTES;
 		boolean nonStandard = chain != Chain.MAINNET;
 
 		byte[] shortId;
