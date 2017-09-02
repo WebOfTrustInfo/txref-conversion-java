@@ -15,16 +15,22 @@ public class Bech32Test extends TestCase {
 		new Object[] { "split1checkupstagehandshakeupstreamerranterredcaperred2y9e3w", new byte[] { 115, 112, 108, 105, 116 }, new byte[] { 24, 23, 25, 24, 22, 28, 1, 16, 11, 29, 8, 25, 23, 29, 19, 13, 16, 23, 29, 22, 25, 28, 1, 16, 11, 3, 25, 29, 27, 25, 3, 3, 29, 19, 11, 25, 3, 3, 25, 13, 24, 29, 1, 25, 3, 3, 25, 13 } }	
 	};
 
-	public void testBech32() throws Exception {
+	public void testBech32Encode() throws Exception {
+
+		for (Object[] test : tests) {
+
+			String result2 = Bech32.bech32Encode((byte[]) test[1], (byte[]) test[2]);
+			assertEquals(((String) test[0]).toLowerCase(), result2);
+		}
+	}
+
+	public void testBech32Decode() throws Exception {
 
 		for (Object[] test : tests) {
 
 			HrpAndData result1 = Bech32.bech32Decode((String) test[0]);
-			assert(Arrays.equals((byte[]) test[1], result1.getHrp()));
-			assert(Arrays.equals((byte[]) test[2], result1.getData()));
-
-			String result2 = Bech32.bech32Encode((byte[]) test[1], (byte[]) test[2]);
-			assertEquals(((String) test[0]).toLowerCase(), result2);
+			assertTrue(Arrays.equals((byte[]) test[1], result1.getHrp()));
+			assertTrue(Arrays.equals((byte[]) test[2], result1.getData()));
 		}
 	}
 }
