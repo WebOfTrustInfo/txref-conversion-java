@@ -88,7 +88,7 @@ public class TxrefConverter {
 				result.substring(breakIndex + 12, result.length());
 
 		return finalResult;
-	};
+	}
 
 	public String txrefEncode(ChainAndBlockLocation chainAndBlockLocation) {
 
