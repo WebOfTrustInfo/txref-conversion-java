@@ -1,5 +1,7 @@
 package info.weboftrust.txrefconversion;
 
+import java.util.Arrays;
+
 public class Bech32 {
 
 	private static final String CHARSET = "qpzry9x8gf2tvdw0s3jn54khce6mua7l";
@@ -151,5 +153,33 @@ public class Bech32 {
 		public HrpAndData(byte[] hrp, byte[] data) { this.hrp = hrp; this.data = data; }
 		public byte[] getHrp() { return this.hrp; }
 		public byte[] getData() { return this.data; }
+
+		@Override
+		public String toString() {
+			return "HrpAndData [hrp=" + Arrays.toString(hrp) + ", data=" + Arrays.toString(data) + "]";
+		}
+		@Override
+		public int hashCode() {
+			final int prime = 31;
+			int result = 1;
+			result = prime * result + Arrays.hashCode(data);
+			result = prime * result + Arrays.hashCode(hrp);
+			return result;
+		}
+		@Override
+		public boolean equals(Object obj) {
+			if (this == obj)
+				return true;
+			if (obj == null)
+				return false;
+			if (getClass() != obj.getClass())
+				return false;
+			HrpAndData other = (HrpAndData) obj;
+			if (!Arrays.equals(data, other.data))
+				return false;
+			if (!Arrays.equals(hrp, other.hrp))
+				return false;
+			return true;
+		}
 	}
 }
