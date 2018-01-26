@@ -1,6 +1,7 @@
 package info.weboftrust.txrefconversion.bitcoinconnection;
 
 import java.io.IOException;
+import java.net.MalformedURLException;
 import java.net.URL;
 
 import info.weboftrust.txrefconversion.TxrefConverter.Chain;
@@ -17,10 +18,20 @@ public class BitcoindRPCBitcoinConnection extends AbstractBitcoinConnection impl
 	protected BitcoinJSONRPCClient bitcoindRpcClientMainnet;
 	protected BitcoinJSONRPCClient bitcoindRpcClientTestnet;
 
+	public BitcoindRPCBitcoinConnection(BitcoinJSONRPCClient bitcoindRpcClientMainnet, BitcoinJSONRPCClient bitcoindRpcClientTestnet) {
+
+		this.bitcoindRpcClientMainnet = bitcoindRpcClientMainnet;
+		this.bitcoindRpcClientTestnet = bitcoindRpcClientTestnet;
+	}
+
 	public BitcoindRPCBitcoinConnection(URL rpcUrlMainnet, URL rpcUrlTestnet) {
 
-		this.bitcoindRpcClientMainnet = new BitcoinJSONRPCClient(rpcUrlMainnet);
-		this.bitcoindRpcClientTestnet = new BitcoinJSONRPCClient(rpcUrlTestnet);
+		this(new BitcoinJSONRPCClient(rpcUrlMainnet), new BitcoinJSONRPCClient(rpcUrlTestnet));
+	}
+
+	public BitcoindRPCBitcoinConnection(String rpcUrlMainnet, String rpcUrlTestnet) throws MalformedURLException {
+
+		this(new URL(rpcUrlMainnet), new URL(rpcUrlTestnet));
 	}
 
 	public BitcoindRPCBitcoinConnection() {
@@ -36,7 +47,7 @@ public class BitcoindRPCBitcoinConnection extends AbstractBitcoinConnection impl
 	@Override
 	public String getTxid(Chain chain, long blockHeight, long blockIndex) throws IOException {
 
-		BitcoindRpcClient bitcoindRpcClient = chain == Chain.MAINNET ? bitcoindRpcClientMainnet : bitcoindRpcClientTestnet;
+		BitcoindRpcClient bitcoindRpcClient = chain == Chain.MAINNET ? this.bitcoindRpcClientMainnet : this.bitcoindRpcClientTestnet;
 
 		Block block = bitcoindRpcClient.getBlock((int) blockHeight);
 		if (block == null) return null;
@@ -80,6 +91,16 @@ public class BitcoindRPCBitcoinConnection extends AbstractBitcoinConnection impl
 		this.bitcoindRpcClientMainnet = bitcoindRpcClientMainnet;
 	}
 
+	public void setRpcUrlMainnet(URL rpcUrlMainnet) {
+
+		this.setBitcoindRpcClientMainnet(new BitcoinJSONRPCClient(rpcUrlMainnet));
+	}
+
+	public void setRpcUrlMainnet(String rpcUrlMainnet) throws MalformedURLException {
+
+		this.setRpcUrlMainnet(new URL(rpcUrlMainnet));
+	}
+
 	public BitcoinJSONRPCClient getBitcoindRpcClientTestnet() {
 
 		return this.bitcoindRpcClientTestnet;
@@ -88,5 +109,15 @@ public class BitcoindRPCBitcoinConnection extends AbstractBitcoinConnection impl
 	public void setBitcoindRpcClientTestnet(BitcoinJSONRPCClient bitcoindRpcClientTestnet) {
 
 		this.bitcoindRpcClientTestnet = bitcoindRpcClientTestnet;
+	}
+
+	public void setRpcUrlTestnet(URL rpcUrlTestnet) {
+
+		this.setBitcoindRpcClientTestnet(new BitcoinJSONRPCClient(rpcUrlTestnet));
+	}
+
+	public void setRpcUrlTestnet(String rpcUrlTestnet) throws MalformedURLException {
+
+		this.setRpcUrlTestnet(new URL(rpcUrlTestnet));
 	}
 }
