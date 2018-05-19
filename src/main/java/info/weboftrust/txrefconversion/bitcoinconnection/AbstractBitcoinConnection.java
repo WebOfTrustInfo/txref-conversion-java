@@ -2,7 +2,7 @@ package info.weboftrust.txrefconversion.bitcoinconnection;
 
 import java.io.IOException;
 
-import info.weboftrust.txrefconversion.TxrefConverter.ChainAndBlockLocation;
+import info.weboftrust.txrefconversion.ChainAndBlockLocation;
 
 public abstract class AbstractBitcoinConnection implements BitcoinConnection {
 

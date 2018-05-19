@@ -96,7 +96,7 @@ public class TxrefConverter {
 
 	public String txrefEncode(ChainAndBlockLocation chainAndBlockLocation) {
 
-		return txrefEncode(chainAndBlockLocation.getChain(), chainAndBlockLocation.getBlockHeight(), chainAndBlockLocation.getBlockIndex());
+		return this.txrefEncode(chainAndBlockLocation.getChain(), chainAndBlockLocation.getBlockHeight(), chainAndBlockLocation.getBlockIndex());
 	}
 
 	public ChainAndBlockLocation txrefDecode(String bech32Tx) {
@@ -148,6 +148,11 @@ public class TxrefConverter {
 		return txref;
 	}
 
+	public String txidToTxref(ChainAndTxid chainAndTxid) throws IOException {
+
+		return this.txidToTxref(chainAndTxid.getTxid(), chainAndTxid.getChain());
+	}
+
 	public ChainAndTxid txrefToTxid(String txref) throws IOException {
 
 		ChainAndBlockLocation chainAndBlockLocation = txrefDecode(txref);
@@ -155,96 +160,5 @@ public class TxrefConverter {
 
 		String txid = this.bitcoinConnection.getTxid(chainAndBlockLocation);
 		return new ChainAndTxid(chainAndBlockLocation.getChain(), txid);
-	}
-
-	public static enum Chain {
-
-		MAINNET,
-		TESTNET
-	}
-
-	public static class ChainAndBlockLocation {
-
-		public Chain chain;
-		public long blockHeight;
-		public long blockIndex;
-
-		public ChainAndBlockLocation(Chain chain, long blockHeight, long blockIndex) { this.chain = chain; this.blockHeight = blockHeight; this.blockIndex = blockIndex; }
-		public Chain getChain() { return this.chain; }
-		public long getBlockHeight() { return this.blockHeight; }
-		public long getBlockIndex() { return this.blockIndex; }
-
-		@Override
-		public String toString() {
-			return "ChainAndBlockLocation [chain=" + chain + ", blockHeight=" + blockHeight + ", blockIndex="
-					+ blockIndex + "]";
-		}
-		@Override
-		public int hashCode() {
-			final int prime = 31;
-			int result = 1;
-			result = prime * result + (int) (blockHeight ^ (blockHeight >>> 32));
-			result = prime * result + (int) (blockIndex ^ (blockIndex >>> 32));
-			result = prime * result + ((chain == null) ? 0 : chain.hashCode());
-			return result;
-		}
-		@Override
-		public boolean equals(Object obj) {
-			if (this == obj)
-				return true;
-			if (obj == null)
-				return false;
-			if (getClass() != obj.getClass())
-				return false;
-			ChainAndBlockLocation other = (ChainAndBlockLocation) obj;
-			if (blockHeight != other.blockHeight)
-				return false;
-			if (blockIndex != other.blockIndex)
-				return false;
-			if (chain != other.chain)
-				return false;
-			return true;
-		}
-	}
-
-	public static class ChainAndTxid {
-
-		public Chain chain;
-		public String txid;
-
-		public ChainAndTxid(Chain chain, String txid) { this.chain = chain; this.txid = txid; }
-		public Chain getChain() { return this.chain; }
-		public String getTxid() { return this.txid; }
-
-		@Override
-		public String toString() {
-			return "ChainAndTxid [chain=" + chain + ", txid=" + txid + "]";
-		}
-		@Override
-		public int hashCode() {
-			final int prime = 31;
-			int result = 1;
-			result = prime * result + ((chain == null) ? 0 : chain.hashCode());
-			result = prime * result + ((txid == null) ? 0 : txid.hashCode());
-			return result;
-		}
-		@Override
-		public boolean equals(Object obj) {
-			if (this == obj)
-				return true;
-			if (obj == null)
-				return false;
-			if (getClass() != obj.getClass())
-				return false;
-			ChainAndTxid other = (ChainAndTxid) obj;
-			if (chain != other.chain)
-				return false;
-			if (txid == null) {
-				if (other.txid != null)
-					return false;
-			} else if (!txid.equals(other.txid))
-				return false;
-			return true;
-		}
 	}
 }

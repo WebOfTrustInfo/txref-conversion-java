@@ -1,8 +1,5 @@
 package info.weboftrust.txrefconversion;
 
-import info.weboftrust.txrefconversion.TxrefConverter.Chain;
-import info.weboftrust.txrefconversion.TxrefConverter.ChainAndBlockLocation;
-import info.weboftrust.txrefconversion.TxrefConverter.ChainAndTxid;
 import info.weboftrust.txrefconversion.bitcoinconnection.BlockcypherAPIBitcoinConnection;
 import junit.framework.TestCase;
 

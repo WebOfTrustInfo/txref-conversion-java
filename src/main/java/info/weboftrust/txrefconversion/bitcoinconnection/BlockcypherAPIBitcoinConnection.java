@@ -10,8 +10,8 @@ import org.apache.commons.io.IOUtils;
 import com.google.gson.Gson;
 import com.google.gson.JsonObject;
 
-import info.weboftrust.txrefconversion.TxrefConverter.Chain;
-import info.weboftrust.txrefconversion.TxrefConverter.ChainAndBlockLocation;
+import info.weboftrust.txrefconversion.Chain;
+import info.weboftrust.txrefconversion.ChainAndBlockLocation;
 
 public class BlockcypherAPIBitcoinConnection extends AbstractBitcoinConnection implements BitcoinConnection {
 

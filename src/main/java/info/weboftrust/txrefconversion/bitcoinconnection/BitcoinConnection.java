@@ -2,8 +2,8 @@ package info.weboftrust.txrefconversion.bitcoinconnection;
 
 import java.io.IOException;
 
-import info.weboftrust.txrefconversion.TxrefConverter.Chain;
-import info.weboftrust.txrefconversion.TxrefConverter.ChainAndBlockLocation;
+import info.weboftrust.txrefconversion.Chain;
+import info.weboftrust.txrefconversion.ChainAndBlockLocation;
 
 public interface BitcoinConnection {
 
