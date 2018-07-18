@@ -10,6 +10,18 @@ public class ChainAndBlockLocationAndUtxoIndex extends ChainAndBlockLocation {
 		this.utxoIndex = utxoIndex;
 	}
 
+	public ChainAndBlockLocationAndUtxoIndex(ChainAndBlockLocation chainAndBlockLocation, long utxoIndex) {
+
+		super(chainAndBlockLocation.getChain(), chainAndBlockLocation.getBlockHeight(), chainAndBlockLocation.blockIndex);
+		this.utxoIndex = utxoIndex;
+	}
+
+	public ChainAndBlockLocationAndUtxoIndex(ChainAndBlockLocation chainAndBlockLocation) {
+
+		super(chainAndBlockLocation.getChain(), chainAndBlockLocation.getBlockHeight(), chainAndBlockLocation.blockIndex);
+		this.utxoIndex = 0;
+	}
+
 	public long getUtxoIndex() {
 
 		return this.utxoIndex;
