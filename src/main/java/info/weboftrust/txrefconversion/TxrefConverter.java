@@ -211,7 +211,7 @@ public class TxrefConverter {
 
 	public String txrefextEncode(ChainAndBlockLocationAndUtxoIndex chainAndBlockLocationAndUtxoIndex) {
 
-		return this.txrefEncode(chainAndBlockLocationAndUtxoIndex.getChain(), chainAndBlockLocationAndUtxoIndex.getBlockHeight(), chainAndBlockLocationAndUtxoIndex.getBlockIndex());
+		return this.txrefextEncode(chainAndBlockLocationAndUtxoIndex.getChain(), chainAndBlockLocationAndUtxoIndex.getBlockHeight(), chainAndBlockLocationAndUtxoIndex.getBlockIndex(), chainAndBlockLocationAndUtxoIndex.getUtxoIndex());
 	}
 
 	public ChainAndBlockLocationAndUtxoIndex txrefextDecode(String bech32Tx) {
