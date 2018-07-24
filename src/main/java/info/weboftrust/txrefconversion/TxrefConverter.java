@@ -284,6 +284,11 @@ public class TxrefConverter {
 		ChainAndBlockLocation chainAndBlockLocation = txrefDecode(txref);
 		if (chainAndBlockLocation == null) throw new IllegalArgumentException("Could not decode txref " + txref);
 
+		return txrefToTxid(chainAndBlockLocation);
+	}
+
+	public ChainAndTxid txrefToTxid(ChainAndBlockLocation chainAndBlockLocation) throws IOException {
+
 		String txid = this.bitcoinConnection.getTxid(chainAndBlockLocation);
 		return new ChainAndTxid(chainAndBlockLocation.getChain(), txid);
 	}

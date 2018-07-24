@@ -1,6 +1,5 @@
 package info.weboftrust.txrefconversion;
 
-import info.weboftrust.txrefconversion.bitcoinconnection.BlockcypherAPIBitcoinConnection;
 import junit.framework.TestCase;
 
 public class TxrefConverterTest extends TestCase {
@@ -9,7 +8,7 @@ public class TxrefConverterTest extends TestCase {
 
 	static {
 
-		txrefConverter = new TxrefConverter(BlockcypherAPIBitcoinConnection.get());
+		txrefConverter = TxrefConverter.get();
 	}
 
 	@Override
