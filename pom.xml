@@ -89,6 +89,12 @@
 			<scope>compile</scope>
 		</dependency>
 		<dependency>
+			<groupId>com.github.briandilley.jsonrpc4j</groupId>
+			<artifactId>jsonrpc4j</artifactId>
+			<version>1.5.3</version>
+			<scope>compile</scope>
+		</dependency>
+		<dependency>
 			<groupId>org.bitcoinj</groupId>
 			<artifactId>bitcoinj-core</artifactId>
 			<version>0.14.4</version>
