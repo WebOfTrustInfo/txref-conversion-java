@@ -58,6 +58,7 @@ public class BlockcypherAPIBitcoinConnection extends AbstractBitcoinConnection i
 		long blockHeight = txData.get("block_height").getAsLong();
 		long blockIndex = txData.get("block_index").getAsLong();
 
+		if (blockHeight == -1 || blockIndex == -1) return null;
 		return new ChainAndBlockLocation(chain, blockHeight, blockIndex);
 	}
 

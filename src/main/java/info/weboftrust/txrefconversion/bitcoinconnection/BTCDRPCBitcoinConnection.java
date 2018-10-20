@@ -9,6 +9,7 @@ import java.util.HashMap;
 import java.util.LinkedHashMap;
 import java.util.Map;
 
+import com.googlecode.jsonrpc4j.JsonRpcClientException;
 import com.googlecode.jsonrpc4j.JsonRpcHttpClient;
 
 import info.weboftrust.txrefconversion.Chain;
@@ -116,12 +117,15 @@ public class BTCDRPCBitcoinConnection extends AbstractBitcoinConnection implemen
 
 		JsonRpcHttpClient btcdRpcClient = chain == Chain.MAINNET ? this.btcdRpcClientMainnet : this.btcdRpcClientTestnet;
 
-		LinkedHashMap<String, Object> getrawtransaction_result;
+		String blockHash;
 
-		System.out.println(chain + "  " + txid);
 		try {
 
-			getrawtransaction_result = btcdRpcClient.invoke("getrawtransaction", new Object[] { txid, 1 }, LinkedHashMap.class);
+			LinkedHashMap<String, Object> getrawtransaction_result = btcdRpcClient.invoke("getrawtransaction", new Object[] { txid, 1 }, LinkedHashMap.class);
+			blockHash = (String) getrawtransaction_result.get("blockhash");
+		} catch (JsonRpcClientException ex) {
+
+			throw ex;
 		} catch (IOException ex) {
 
 			throw ex;
@@ -130,13 +134,26 @@ public class BTCDRPCBitcoinConnection extends AbstractBitcoinConnection implemen
 			throw new IOException("getrawtransaction() exception: " + ex.getMessage(), ex);
 		}
 
-		String blockHash = (String) getrawtransaction_result.get("blockhash");
+		if (blockHash == null) return null;
 
-		LinkedHashMap<String, Object> getblock_result;
+		Integer blockHeight;
+		ArrayList<String> txs;
 
 		try {
 
-			getblock_result = btcdRpcClient.invoke("getblock", new Object[] { blockHash, true, false }, LinkedHashMap.class);
+			LinkedHashMap<String, Object> getblock_result = btcdRpcClient.invoke("getblock", new Object[] { blockHash, true, false }, LinkedHashMap.class);
+			blockHeight = (Integer) getblock_result.get("height");
+			txs = (ArrayList<String>) getblock_result.get("tx");
+		} catch (JsonRpcClientException ex) {
+
+			if (ex.getCode() == -5) {
+
+				blockHeight = null;
+				txs = null;
+			} else {
+
+				throw ex;
+			}
 		} catch (IOException ex) {
 
 			throw ex;
@@ -145,10 +162,7 @@ public class BTCDRPCBitcoinConnection extends AbstractBitcoinConnection implemen
 			throw new IOException("getblock() exception: " + ex.getMessage(), ex);
 		}
 
-		Integer blockHeight = (Integer) getblock_result.get("height");
-
-		ArrayList<String> txs = (ArrayList<String>) getblock_result.get("tx");
-		System.out.println(getblock_result);
+		if (blockHeight == null || txs == null) return null;
 
 		long blockIndex;
 		for (blockIndex=0; blockIndex<txs.size(); blockIndex++) { if (txs.get((int) blockIndex).equals(txid)) break; }

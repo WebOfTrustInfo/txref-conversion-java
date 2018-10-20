@@ -269,6 +269,7 @@ public class TxrefConverter {
 	public String txidToTxref(String txid, Chain chain) throws IOException {
 
 		ChainAndBlockLocation blockLocation = this.bitcoinConnection.getChainAndBlockLocation(chain, txid);
+		if (blockLocation == null) return null;
 
 		String txref = txrefEncode(blockLocation);
 		return txref;
