@@ -39,6 +39,12 @@ public abstract class AbstractBitcoinConnection implements BitcoinConnection {
 	}
 
 	@Override
+	public String toTxref(Chain chain, String txid) throws IOException {
+
+		return this.toTxref(new ChainAndTxid(chain, txid));
+	}
+
+	@Override
 	public ChainAndTxid fromTxref(String txref) throws IOException {
 
 		ChainAndBlockLocation chainAndBlockLocation = TxrefDecoder.txrefDecode(txref);

@@ -15,5 +15,6 @@ public interface BitcoinConnection {
 	public ChainAndBlockLocation lookupChainAndBlockLocation(Chain chain, String txid) throws IOException;
 
 	public String toTxref(ChainAndTxid chainAndTxid) throws IOException;
+	public String toTxref(Chain chain, String txid) throws IOException;
 	public ChainAndTxid fromTxref(String txref) throws IOException;
 }
