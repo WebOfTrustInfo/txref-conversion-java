@@ -6,6 +6,7 @@ import java.net.URL;
 
 import info.weboftrust.txrefconversion.Chain;
 import info.weboftrust.txrefconversion.ChainAndBlockLocation;
+import info.weboftrust.txrefconversion.ChainAndTxid;
 import wf.bitcoin.javabitcoindrpcclient.BitcoinJSONRPCClient;
 import wf.bitcoin.javabitcoindrpcclient.BitcoindRpcClient;
 import wf.bitcoin.javabitcoindrpcclient.BitcoindRpcClient.Block;
@@ -45,25 +46,25 @@ public class BitcoindRPCBitcoinConnection extends AbstractBitcoinConnection impl
 	}
 
 	@Override
-	public String getTxid(Chain chain, long blockHeight, long blockIndex) throws IOException {
+	public ChainAndTxid lookupChainAndTxid(ChainAndBlockLocation chainAndBlockLocation) throws IOException {
 
-		BitcoindRpcClient bitcoindRpcClient = chain == Chain.MAINNET ? this.bitcoindRpcClientMainnet : this.bitcoindRpcClientTestnet;
+		BitcoindRpcClient bitcoindRpcClient = chainAndBlockLocation.getChain() == Chain.MAINNET ? this.bitcoindRpcClientMainnet : this.bitcoindRpcClientTestnet;
 
-		Block block = bitcoindRpcClient.getBlock((int) blockHeight);
+		Block block = bitcoindRpcClient.getBlock((int) chainAndBlockLocation.getBlockHeight());
 		if (block == null) return null;
-		if (block.tx().size() <= blockIndex) return null;
+		if (block.tx().size() <= chainAndBlockLocation.getBlockIndex()) return null;
 
-		String txid = block.tx().get((int) blockIndex);
+		String txid = block.tx().get((int) chainAndBlockLocation.getBlockIndex());
 
-		return txid;
+		return new ChainAndTxid(chainAndBlockLocation.getChain(), txid, chainAndBlockLocation.getUtxoIndex());
 	}
 
 	@Override
-	public ChainAndBlockLocation getChainAndBlockLocation(Chain chain, String txid) throws IOException {
+	public ChainAndBlockLocation lookupChainAndBlockLocation(ChainAndTxid chainAndTxid) throws IOException {
 
-		BitcoindRpcClient bitcoindRpcClient = chain == Chain.MAINNET ? bitcoindRpcClientMainnet : bitcoindRpcClientTestnet;
+		BitcoindRpcClient bitcoindRpcClient = chainAndTxid.getChain() == Chain.MAINNET ? bitcoindRpcClientMainnet : bitcoindRpcClientTestnet;
 
-		RawTransaction rawTransaction = bitcoindRpcClient.getRawTransaction(txid);
+		RawTransaction rawTransaction = bitcoindRpcClient.getRawTransaction(chainAndTxid.getTxid());
 		if (rawTransaction == null) return null;
 
 		Block block = bitcoindRpcClient.getBlock(rawTransaction.blockHash());
@@ -71,10 +72,10 @@ public class BitcoindRPCBitcoinConnection extends AbstractBitcoinConnection impl
 
 		long blockHeight = block.height();
 		long blockIndex;
-		for (blockIndex=0; blockIndex<block.size(); blockIndex++) { if (block.tx().get((int) blockIndex).equals(txid)) break; }
+		for (blockIndex=0; blockIndex<block.size(); blockIndex++) { if (block.tx().get((int) blockIndex).equals(chainAndTxid.getTxid())) break; }
 		if (blockIndex == block.size()) return null;
 
-		return new ChainAndBlockLocation(chain, blockHeight, blockIndex);
+		return new ChainAndBlockLocation(chainAndTxid.getChain(), blockHeight, blockIndex, chainAndTxid.getUtxoIndex());
 	}
 
 	/*

@@ -5,12 +5,19 @@ public class ChainAndBlockLocation {
 	public Chain chain;
 	public long blockHeight;
 	public long blockIndex;
+	public long utxoIndex;
 
-	public ChainAndBlockLocation(Chain chain, long blockHeight, long blockIndex) {
+	public ChainAndBlockLocation(Chain chain, long blockHeight, long blockIndex, long utxoIndex) {
 
 		this.chain = chain;
 		this.blockHeight = blockHeight;
 		this.blockIndex = blockIndex;
+		this.utxoIndex = utxoIndex;
+	}
+
+	public ChainAndBlockLocation(Chain chain, long blockHeight, long blockIndex) {
+
+		this(chain, blockHeight, blockIndex, -1);
 	}
 
 	public Chain getChain() { 
@@ -28,11 +35,17 @@ public class ChainAndBlockLocation {
 		return this.blockIndex;
 	}
 
+	public long getUtxoIndex() {
+
+		return this.utxoIndex;
+	}
+
 	@Override
 	public String toString() {
-		return "ChainAndBlockLocation [chain=" + chain + ", blockHeight=" + blockHeight + ", blockIndex="
-				+ blockIndex + "]";
+		return "ChainAndBlockLocation [chain=" + chain + ", blockHeight=" + blockHeight + ", blockIndex=" + blockIndex
+				+ ", utxoIndex=" + utxoIndex + "]";
 	}
+
 	@Override
 	public int hashCode() {
 		final int prime = 31;
@@ -40,8 +53,10 @@ public class ChainAndBlockLocation {
 		result = prime * result + (int) (blockHeight ^ (blockHeight >>> 32));
 		result = prime * result + (int) (blockIndex ^ (blockIndex >>> 32));
 		result = prime * result + ((chain == null) ? 0 : chain.hashCode());
+		result = prime * result + (int) (utxoIndex ^ (utxoIndex >>> 32));
 		return result;
 	}
+
 	@Override
 	public boolean equals(Object obj) {
 		if (this == obj)
@@ -56,6 +71,8 @@ public class ChainAndBlockLocation {
 		if (blockIndex != other.blockIndex)
 			return false;
 		if (chain != other.chain)
+			return false;
+		if (utxoIndex != other.utxoIndex)
 			return false;
 		return true;
 	}

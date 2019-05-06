@@ -4,8 +4,8 @@ import java.io.IOException;
 
 import org.bitcoinj.core.BlockChain;
 
-import info.weboftrust.txrefconversion.Chain;
 import info.weboftrust.txrefconversion.ChainAndBlockLocation;
+import info.weboftrust.txrefconversion.ChainAndTxid;
 
 public class BitcoinjSPVBitcoinConnection extends AbstractBitcoinConnection implements BitcoinConnection {
 
@@ -29,13 +29,13 @@ public class BitcoinjSPVBitcoinConnection extends AbstractBitcoinConnection impl
 	}
 
 	@Override
-	public String getTxid(Chain chain, long blockHeight, long blockIndex) throws IOException {
+	public ChainAndTxid lookupChainAndTxid(ChainAndBlockLocation chainAndBlockLocation) throws IOException {
 
 		throw new RuntimeException("Not implemented.");
 	}
 
 	@Override
-	public ChainAndBlockLocation getChainAndBlockLocation(Chain chain, String txid) throws IOException {
+	public ChainAndBlockLocation lookupChainAndBlockLocation(ChainAndTxid chainAndTxid) throws IOException {
 
 		throw new RuntimeException("Not implemented.");
 	}

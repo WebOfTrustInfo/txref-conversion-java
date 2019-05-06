@@ -14,6 +14,7 @@ import com.googlecode.jsonrpc4j.JsonRpcHttpClient;
 
 import info.weboftrust.txrefconversion.Chain;
 import info.weboftrust.txrefconversion.ChainAndBlockLocation;
+import info.weboftrust.txrefconversion.ChainAndTxid;
 
 public class BTCDRPCBitcoinConnection extends AbstractBitcoinConnection implements BitcoinConnection {
 
@@ -67,15 +68,15 @@ public class BTCDRPCBitcoinConnection extends AbstractBitcoinConnection implemen
 
 	@SuppressWarnings("unchecked")
 	@Override
-	public String getTxid(Chain chain, long blockHeight, long blockIndex) throws IOException {
+	public ChainAndTxid lookupChainAndTxid(ChainAndBlockLocation chainAndBlockLocation) throws IOException {
 
-		JsonRpcHttpClient btcdRpcClient = chain == Chain.MAINNET ? this.btcdRpcClientMainnet : this.btcdRpcClientTestnet;
+		JsonRpcHttpClient btcdRpcClient = chainAndBlockLocation.getChain() == Chain.MAINNET ? this.btcdRpcClientMainnet : this.btcdRpcClientTestnet;
 
 		String getblockhash_result;
 
 		try {
 
-			getblockhash_result = btcdRpcClient.invoke("getblockhash", new Object[] { blockHeight }, String.class);
+			getblockhash_result = btcdRpcClient.invoke("getblockhash", new Object[] { chainAndBlockLocation.getBlockHeight() }, String.class);
 		} catch (IOException ex) {
 
 			throw ex;
@@ -102,26 +103,26 @@ public class BTCDRPCBitcoinConnection extends AbstractBitcoinConnection implemen
 		ArrayList<Object> rawTxs = (ArrayList<Object>) getblock_result.get("rawtx");
 		if (rawTxs == null) return null;
 
-		LinkedHashMap<String, Object> rawTx = (LinkedHashMap<String, Object>) rawTxs.get((int) blockIndex);
+		LinkedHashMap<String, Object> rawTx = (LinkedHashMap<String, Object>) rawTxs.get((int) chainAndBlockLocation.getBlockIndex());
 		if (rawTx == null) return null;
 
 		String txid = (String) rawTx.get("txid");
 		if (txid == null) return null;
 
-		return txid;
+		return new ChainAndTxid(chainAndBlockLocation.getChain(), txid, chainAndBlockLocation.getUtxoIndex());
 	}
 
 	@SuppressWarnings("unchecked")
 	@Override
-	public ChainAndBlockLocation getChainAndBlockLocation(Chain chain, String txid) throws IOException {
+	public ChainAndBlockLocation lookupChainAndBlockLocation(ChainAndTxid chainAndTxid) throws IOException {
 
-		JsonRpcHttpClient btcdRpcClient = chain == Chain.MAINNET ? this.btcdRpcClientMainnet : this.btcdRpcClientTestnet;
+		JsonRpcHttpClient btcdRpcClient = chainAndTxid.getChain() == Chain.MAINNET ? this.btcdRpcClientMainnet : this.btcdRpcClientTestnet;
 
 		String blockHash;
 
 		try {
 
-			LinkedHashMap<String, Object> getrawtransaction_result = btcdRpcClient.invoke("getrawtransaction", new Object[] { txid, 1 }, LinkedHashMap.class);
+			LinkedHashMap<String, Object> getrawtransaction_result = btcdRpcClient.invoke("getrawtransaction", new Object[] { chainAndTxid.getTxid(), 1 }, LinkedHashMap.class);
 			blockHash = (String) getrawtransaction_result.get("blockhash");
 		} catch (JsonRpcClientException ex) {
 
@@ -165,10 +166,10 @@ public class BTCDRPCBitcoinConnection extends AbstractBitcoinConnection implemen
 		if (blockHeight == null || txs == null) return null;
 
 		long blockIndex;
-		for (blockIndex=0; blockIndex<txs.size(); blockIndex++) { if (txs.get((int) blockIndex).equals(txid)) break; }
+		for (blockIndex=0; blockIndex<txs.size(); blockIndex++) { if (txs.get((int) blockIndex).equals(chainAndTxid.getTxid())) break; }
 		if (blockIndex == txs.size()) return null;
 
-		return new ChainAndBlockLocation(chain, blockHeight, blockIndex);
+		return new ChainAndBlockLocation(chainAndTxid.getChain(), blockHeight, blockIndex, chainAndTxid.getUtxoIndex());
 	}
 
 	/*
