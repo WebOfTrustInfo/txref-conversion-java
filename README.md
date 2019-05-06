@@ -4,7 +4,7 @@ Built a few weeks after the [BTCR Virtual Hackathon](https://github.com/WebOfTru
 
 ### Information
 
-This is an implementation of [Bech32 Encoded Transaction Position References](https://github.com/veleslavs/bips/blob/wip/bip-XXXX-Bech32_Encoded_Transaction_Postion_References.mediawiki).
+This is an implementation of [BIP 136: Bech32 Encoded Tx Position References](https://github.com/bitcoin/bips/pull/555).
 
 Use at your own risk! Pull requests welcome.
 
@@ -34,8 +34,9 @@ Dependency:
 		
 		public static void main(String[] args) throws Exception {
 	
-			String txref = TxrefConverter.get().txidToTxref("016b71d9ec62709656504f1282bb81f7acf998df025e54bd68ea33129d8a425b", Chain.MAINNET);
-			System.out.println(txref); // expect "tx1-rk63-uvxf-9pqc-sy"
+			BitcoinConnection bitcoinConnection = BlockcypherAPIBitcoinConnection.get();
+			String txref = bitcoinConnection.toTxref(Chain.MAINNET, "016b71d9ec62709656504f1282bb81f7acf998df025e54bd68ea33129d8a425b");
+			System.out.println(txref); // expect "tx1:rk63-uqnf-zscg-527"
 		}
 	}
 
@@ -48,9 +49,10 @@ Dependency:
 		
 		public static void main(String[] args) throws Exception {
 	
-			TxidAndChain txidAndChain = TxrefConverter.get().txrefToTxid("txtest1-xyv2-xzyq-qqm5-tyke");
-			System.out.println(txidAndChain.getTxid()); // expect "f8cdaff3ebd9e862ed5885f8975489090595abe1470397f79780ead1c7528107"
-			System.out.println(txidAndChain.getChain()); // expect "MAINNET"
+			BitcoinConnection bitcoinConnection = BlockcypherAPIBitcoinConnection.get();
+			ChainAndTxid chainAndTxid = bitcoinConnection.fromTxref("txtest1:xyv2-xzpq-q9wa-p7t");
+			System.out.println(chainAndTxid.getChain()); // expect "TESTNET"
+			System.out.println(chainAndTxid.getTxid()); // expect "f8cdaff3ebd9e862ed5885f8975489090595abe1470397f79780ead1c7528107"
 		}
 	}
 
