@@ -2,9 +2,9 @@ package info.weboftrust.txrefconversion;
 
 public class ChainAndTxid {
 
-	public Chain chain;
-	public String txid;
-	public long utxoIndex;
+	private Chain chain;
+	private String txid;
+	private long utxoIndex;
 
 	public ChainAndTxid(Chain chain, String txid, long utxoIndex) {
 

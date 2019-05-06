@@ -2,10 +2,10 @@ package info.weboftrust.txrefconversion;
 
 public class ChainAndBlockLocation {
 
-	public Chain chain;
-	public long blockHeight;
-	public long blockIndex;
-	public long utxoIndex;
+	private Chain chain;
+	private long blockHeight;
+	private long blockIndex;
+	private long utxoIndex;
 
 	public ChainAndBlockLocation(Chain chain, long blockHeight, long blockIndex, long utxoIndex) {
 
