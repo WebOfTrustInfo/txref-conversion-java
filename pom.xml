@@ -85,7 +85,7 @@
 		<dependency>
 			<groupId>wf.bitcoin</groupId>
 			<artifactId>JavaBitcoindRpcClient</artifactId>
-			<version>0.9.14</version>
+			<version>1.0.0</version>
 			<scope>compile</scope>
 		</dependency>
 		<dependency>
@@ -97,7 +97,7 @@
 		<dependency>
 			<groupId>org.bitcoinj</groupId>
 			<artifactId>bitcoinj-core</artifactId>
-			<version>0.14.4</version>
+			<version>0.15.2</version>
 			<scope>compile</scope>
 		</dependency>
 		<dependency>
