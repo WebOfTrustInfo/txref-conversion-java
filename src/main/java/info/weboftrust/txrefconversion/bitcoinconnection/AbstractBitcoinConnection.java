@@ -23,10 +23,17 @@ public abstract class AbstractBitcoinConnection implements BitcoinConnection {
 	}
 
 	@Override
+	public ChainAndBlockLocation lookupChainAndBlockLocation(Chain chain, String txid, long utxoIndex) throws IOException {
+
+		return this.lookupChainAndBlockLocation(new ChainAndTxid(chain, txid, utxoIndex));
+	}
+
+	@Override
 	public ChainAndBlockLocation lookupChainAndBlockLocation(Chain chain, String txid) throws IOException {
 
 		return this.lookupChainAndBlockLocation(new ChainAndTxid(chain, txid));
 	}
+
 
 	@Override
 	public String toTxref(ChainAndTxid chainAndTxid) throws IOException {
