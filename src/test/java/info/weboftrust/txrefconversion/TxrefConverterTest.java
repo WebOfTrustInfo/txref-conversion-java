@@ -44,6 +44,7 @@ public class TxrefConverterTest extends TestCase {
 
 		new Object[] { Chain.TESTNET, "txtest1:xk63-uqnf-zasf-wgq", (long) 467883, (long) 2355 },	
 		new Object[] { Chain.TESTNET, "txtest1:xyv2-xzpq-q9wa-p7t", (long) 1152194, (long) 1 },
+		new Object[] { Chain.TESTNET, "txtest1:xz35-jznz-q6mr-7q6", (long) 1354001, (long) 83 },
 
 		// mainnet with utxoIndex
 
