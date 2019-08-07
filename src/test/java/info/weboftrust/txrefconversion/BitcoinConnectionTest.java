@@ -1,7 +1,7 @@
 package info.weboftrust.txrefconversion;
 
-import info.weboftrust.txrefconversion.bitcoinconnection.BTCDRPCBitcoinConnection;
 import info.weboftrust.txrefconversion.bitcoinconnection.BitcoinConnection;
+import info.weboftrust.txrefconversion.bitcoinconnection.BitcoindRPCBitcoinConnection;
 import junit.framework.TestCase;
 
 public class BitcoinConnectionTest extends TestCase {
@@ -10,7 +10,7 @@ public class BitcoinConnectionTest extends TestCase {
 
 	static {
 
-		bitcoinConnection = new BTCDRPCBitcoinConnection();
+		bitcoinConnection = new BitcoindRPCBitcoinConnection();
 	}
 
 	@Override
