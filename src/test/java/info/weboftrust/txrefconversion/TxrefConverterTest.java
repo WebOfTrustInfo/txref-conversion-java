@@ -20,7 +20,7 @@ public class TxrefConverterTest extends TestCase {
 
 	private static Object[][] tests1 = new Object[][] {
 
-		// mainnet
+		// mainnet (short form)
 
 		new Object[] { Chain.MAINNET, "tx1:rqqq-qqqq-qmhu-qhp", (int) 0x0, (int) 0x0 },
 		new Object[] { Chain.MAINNET, "tx1:rqqq-qqll-l8xh-jkg", (int) 0x0, (int) 0x7FFF },
@@ -35,7 +35,7 @@ public class TxrefConverterTest extends TestCase {
 		new Object[] { Chain.MAINNET, "tx1:rqqq-qqll-8vnm-xax", (int) 0, (int) 8191 },	
 		new Object[] { Chain.MAINNET, "tx1:rjk0-uqay-zsrw-hqe", (int) 0x71F69, (int) 0x89D },	
 
-		// testnet
+		// testnet (short form)
 
 		new Object[] { Chain.TESTNET, "txtest1:xqqq-qqqq-qkla-64l", (int) 0, (int) 0 },	
 		new Object[] { Chain.TESTNET, "txtest1:xqqq-qqll-l2wk-g5k", (int) 0, (int) 0x7FFF },	
@@ -45,8 +45,10 @@ public class TxrefConverterTest extends TestCase {
 		new Object[] { Chain.TESTNET, "txtest1:xk63-uqnf-zasf-wgq", (int) 467883, (int) 2355 },	
 		new Object[] { Chain.TESTNET, "txtest1:xyv2-xzpq-q9wa-p7t", (int) 1152194, (int) 1 },
 		new Object[] { Chain.TESTNET, "txtest1:xz35-jznz-q6mr-7q6", (int) 1354001, (int) 83 },
+		new Object[] { Chain.TESTNET, "txtest1:xkyt-fzzq-q4wq-f2d", (int) 1201739, (int) 2 },
+		new Object[] { Chain.TESTNET, "txtest1:xksa-czpq-qeuw-qcg", (int) 1456907, (int) 1 },
 
-		// mainnet with utxoIndex
+		// mainnet (extended form)
 
 		new Object[] { Chain.MAINNET, "tx1:yqqq-qqqq-qqqq-ksvh-26", (int) 0x0, (int) 0x0, (int) 0x0 },
 		new Object[] { Chain.MAINNET, "tx1:yqqq-qqll-lqqq-v0h2-2k", (int) 0x0, (int) 0x7FFF, (int) 0x0 },
@@ -59,7 +61,7 @@ public class TxrefConverterTest extends TestCase {
 		new Object[] { Chain.MAINNET, "tx1:yjk0-uqay-zrfq-g2cg-t8", (int) 0x71F69, (int) 0x89D, (int) 0x123 },
 		new Object[] { Chain.MAINNET, "tx1:yjk0-uqay-zu4x-nk6u-pc", (int) 0x71F69, (int) 0x89D, (int) 0x1ABC },
 
-		// testnet with utxoIndex
+		// testnet (extended form)
 
 		new Object[] { Chain.TESTNET, "txtest1:8qqq-qqqq-qqqq-cgru-fa", (int) 0x0, (int) 0x0, (int) 0x0 },
 		new Object[] { Chain.TESTNET, "txtest1:8qqq-qqll-lqqq-zhcp-f3", (int) 0x0, (int) 0x7FFF, (int) 0x0 },
@@ -81,14 +83,19 @@ public class TxrefConverterTest extends TestCase {
 
 		for (Object[] test : tests1) {
 
-			String result;
+			if (test.length > 4) {
 
-			if (test.length > 4)			
-				result = ChainAndLocationData.txrefEncode((Chain) test[0], (int) test[2], (int) test[3], (int) test[4]);
-			else
-				result = ChainAndLocationData.txrefEncode((Chain) test[0], (int) test[2], (int) test[3]);
+				String result = ChainAndLocationData.txrefEncode((Chain) test[0], (int) test[2], (int) test[3], (int) test[4], true);
+				assertEquals((String) test[1], result);
+			} else {
 
-			assertEquals((String) test[1], result);
+				String result1 = ChainAndLocationData.txrefEncode((Chain) test[0], (int) test[2], (int) test[3], 0);
+				assertEquals((String) test[1], result1);
+
+				String result2 = ChainAndLocationData.txrefEncode((Chain) test[0], (int) test[2], (int) test[3]);
+				assertEquals((String) test[1], result2);
+			}
+
 		}
 	}
 
@@ -104,6 +111,58 @@ public class TxrefConverterTest extends TestCase {
 			assertEquals(test[3], result.getLocationData().getTransactionPosition());
 
 			if (test.length > 4) assertEquals(test[4], result.getLocationData().getTxoIndex());
+		}
+	}
+
+
+	private static Object[][] tests2 = new Object[][] {
+
+		new Object[] { "tx1:yqqq-qqqq-qqqq-ksvh-26", "tx1:rqqq-qqqq-qmhu-qhp" },
+		new Object[] { "tx1:yqqq-qqll-lqqq-v0h2-2k", "tx1:rqqq-qqll-l8xh-jkg" },
+		new Object[] { "tx1:y7ll-llqq-qqqq-a5zy-tc", "tx1:r7ll-llqq-qghq-qr8" },
+		new Object[] { "tx1:y7ll-llll-lqqq-8tee-t5", "tx1:r7ll-llll-l5xt-jzw" },
+		new Object[] { "tx1:yqqq-qqqq-qpqq-5j9q-nz", null },
+		new Object[] { "tx1:yqqq-qqll-lpqq-wd7a-nw", null },
+		new Object[] { "tx1:y7ll-llqq-qpqq-lktn-jq", null },
+		new Object[] { "tx1:y7ll-llll-lpqq-9fsw-jv", null },
+		new Object[] { "tx1:yjk0-uqay-zrfq-g2cg-t8", null },
+		new Object[] { "tx1:yjk0-uqay-zu4x-nk6u-pc", null },
+
+		new Object[] { "txtest1:8qqq-qqqq-qqqq-cgru-fa", "txtest1:xqqq-qqqq-qkla-64l" },
+		new Object[] { "txtest1:8qqq-qqll-lqqq-zhcp-f3", "txtest1:xqqq-qqll-l2wk-g5k" },
+		new Object[] { "txtest1:87ll-llqq-qqqq-nvd0-gl", "txtest1:x7ll-llqq-q9lp-6pe" },
+		new Object[] { "txtest1:87ll-llll-lqqq-fnkj-gn", "txtest1:x7ll-llll-lew2-gqs" },
+		new Object[] { "txtest1:8qqq-qqqq-qpqq-622t-s9", null },
+		new Object[] { "txtest1:8qqq-qqll-lpqq-q43k-sf", null },
+		new Object[] { "txtest1:87ll-llqq-qpqq-3wyc-38", null },
+		new Object[] { "txtest1:87ll-llll-lpqq-t3l9-3t", null },
+		new Object[] { "txtest1:8jk0-uqay-zrfq-xjhr-gq", null },
+		new Object[] { "txtest1:8jk0-uqay-zu4x-aw4h-zl", null },
+
+		new Object[] { "txtest1:8z35-jznz-qqqq-xstv-nc", "txtest1:xz35-jznz-q6mr-7q6" },
+		new Object[] { "txtest1:8kyt-fzzq-qqqq-ase0-d8", "txtest1:xkyt-fzzq-q4wq-f2d" },
+		new Object[] { "txtest1:8ksa-czpq-qqqq-k85h-97", "txtest1:xksa-czpq-qeuw-qcg" },
+	};
+
+	public void testShortExtended() throws Exception {
+
+		for (Object[] test : tests2) {
+
+			String ext = (String) test[0];
+			String shrt = (String) test[1];
+
+			ChainAndLocationData extChainAndLocationData = ChainAndLocationData.txrefDecode(ext);
+			String txref = ChainAndLocationData.txrefEncode(extChainAndLocationData);
+
+			if (shrt == null) {
+
+				assert(extChainAndLocationData.getLocationData().getTxoIndex() > 0);
+				assert(txref.equals(ext));
+			} else {
+
+				assert(extChainAndLocationData.getLocationData().getTxoIndex() == 0);
+				assert(txref.equals(shrt));
+			}
 		}
 	}
 }
