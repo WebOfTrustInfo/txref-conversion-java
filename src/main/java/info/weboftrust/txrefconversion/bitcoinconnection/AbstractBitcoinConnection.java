@@ -3,45 +3,43 @@ package info.weboftrust.txrefconversion.bitcoinconnection;
 import java.io.IOException;
 
 import info.weboftrust.txrefconversion.Chain;
-import info.weboftrust.txrefconversion.ChainAndBlockLocation;
+import info.weboftrust.txrefconversion.ChainAndLocationData;
 import info.weboftrust.txrefconversion.ChainAndTxid;
-import info.weboftrust.txrefconversion.TxrefDecoder;
-import info.weboftrust.txrefconversion.TxrefEncoder;
 
 public abstract class AbstractBitcoinConnection implements BitcoinConnection {
 
 	@Override
-	public ChainAndTxid lookupChainAndTxid(Chain chain, long blockHeight, long blockIndex, long utxoIndex) throws IOException {
+	public ChainAndTxid lookupChainAndTxid(Chain chain, int blockHeight, int transactionPosition, int txoIndex) throws IOException {
 
-		return this.lookupChainAndTxid(new ChainAndBlockLocation(chain, blockHeight, blockIndex, utxoIndex));
+		return this.lookupChainAndTxid(new ChainAndLocationData(chain, blockHeight, transactionPosition, txoIndex));
 	}
 
 	@Override
-	public ChainAndTxid lookupChainAndTxid(Chain chain, long blockHeight, long blockIndex) throws IOException {
+	public ChainAndTxid lookupChainAndTxid(Chain chain, int blockHeight, int transactionPosition) throws IOException {
 
-		return this.lookupChainAndTxid(new ChainAndBlockLocation(chain, blockHeight, blockIndex));
+		return this.lookupChainAndTxid(new ChainAndLocationData(chain, blockHeight, transactionPosition));
 	}
 
 	@Override
-	public ChainAndBlockLocation lookupChainAndBlockLocation(Chain chain, String txid, long utxoIndex) throws IOException {
+	public ChainAndLocationData lookupChainAndLocationData(Chain chain, String txid, int txoIndex) throws IOException {
 
-		return this.lookupChainAndBlockLocation(new ChainAndTxid(chain, txid, utxoIndex));
+		return this.lookupChainAndLocationData(new ChainAndTxid(chain, txid, txoIndex));
 	}
 
 	@Override
-	public ChainAndBlockLocation lookupChainAndBlockLocation(Chain chain, String txid) throws IOException {
+	public ChainAndLocationData lookupChainAndLocationData(Chain chain, String txid) throws IOException {
 
-		return this.lookupChainAndBlockLocation(new ChainAndTxid(chain, txid));
+		return this.lookupChainAndLocationData(new ChainAndTxid(chain, txid));
 	}
 
 
 	@Override
 	public String toTxref(ChainAndTxid chainAndTxid) throws IOException {
 
-		ChainAndBlockLocation blockLocation = this.lookupChainAndBlockLocation(chainAndTxid);
-		if (blockLocation == null) return null;
+		ChainAndLocationData chainAndLocationData = this.lookupChainAndLocationData(chainAndTxid);
+		if (chainAndLocationData == null) return null;
 
-		String txref = TxrefEncoder.txrefEncode(blockLocation);
+		String txref = ChainAndLocationData.txrefEncode(chainAndLocationData);
 		return txref;
 	}
 
@@ -54,9 +52,9 @@ public abstract class AbstractBitcoinConnection implements BitcoinConnection {
 	@Override
 	public ChainAndTxid fromTxref(String txref) throws IOException {
 
-		ChainAndBlockLocation chainAndBlockLocation = TxrefDecoder.txrefDecode(txref);
-		if (chainAndBlockLocation == null) throw new IllegalArgumentException("Could not decode txref " + txref);
+		ChainAndLocationData chainAndLocationData = ChainAndLocationData.txrefDecode(txref);
+		if (chainAndLocationData == null) throw new IllegalArgumentException("Could not decode txref " + txref);
 
-		return this.lookupChainAndTxid(chainAndBlockLocation);
+		return this.lookupChainAndTxid(chainAndLocationData);
 	}
 }

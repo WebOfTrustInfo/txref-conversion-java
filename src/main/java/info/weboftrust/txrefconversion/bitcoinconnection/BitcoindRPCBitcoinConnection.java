@@ -5,7 +5,7 @@ import java.net.MalformedURLException;
 import java.net.URL;
 
 import info.weboftrust.txrefconversion.Chain;
-import info.weboftrust.txrefconversion.ChainAndBlockLocation;
+import info.weboftrust.txrefconversion.ChainAndLocationData;
 import info.weboftrust.txrefconversion.ChainAndTxid;
 import wf.bitcoin.javabitcoindrpcclient.BitcoinJSONRPCClient;
 import wf.bitcoin.javabitcoindrpcclient.BitcoindRpcClient;
@@ -46,21 +46,21 @@ public class BitcoindRPCBitcoinConnection extends AbstractBitcoinConnection impl
 	}
 
 	@Override
-	public ChainAndTxid lookupChainAndTxid(ChainAndBlockLocation chainAndBlockLocation) throws IOException {
+	public ChainAndTxid lookupChainAndTxid(ChainAndLocationData chainAndLocationData) throws IOException {
 
-		BitcoindRpcClient bitcoindRpcClient = chainAndBlockLocation.getChain() == Chain.MAINNET ? this.bitcoindRpcClientMainnet : this.bitcoindRpcClientTestnet;
+		BitcoindRpcClient bitcoindRpcClient = chainAndLocationData.getChain() == Chain.MAINNET ? this.bitcoindRpcClientMainnet : this.bitcoindRpcClientTestnet;
 
-		Block block = bitcoindRpcClient.getBlock((int) chainAndBlockLocation.getBlockHeight());
+		Block block = bitcoindRpcClient.getBlock(chainAndLocationData.getLocationData().getBlockHeight());
 		if (block == null) return null;
-		if (block.tx().size() <= chainAndBlockLocation.getBlockIndex()) return null;
+		if (block.tx().size() <= chainAndLocationData.getLocationData().getTransactionPosition()) return null;
 
-		String txid = block.tx().get((int) chainAndBlockLocation.getBlockIndex());
+		String txid = block.tx().get(chainAndLocationData.getLocationData().getTransactionPosition());
 
-		return new ChainAndTxid(chainAndBlockLocation.getChain(), txid, chainAndBlockLocation.getUtxoIndex());
+		return new ChainAndTxid(chainAndLocationData.getChain(), txid, chainAndLocationData.getLocationData().getTxoIndex());
 	}
 
 	@Override
-	public ChainAndBlockLocation lookupChainAndBlockLocation(ChainAndTxid chainAndTxid) throws IOException {
+	public ChainAndLocationData lookupChainAndLocationData(ChainAndTxid chainAndTxid) throws IOException {
 
 		BitcoindRpcClient bitcoindRpcClient = chainAndTxid.getChain() == Chain.MAINNET ? bitcoindRpcClientMainnet : bitcoindRpcClientTestnet;
 
@@ -70,12 +70,12 @@ public class BitcoindRPCBitcoinConnection extends AbstractBitcoinConnection impl
 		Block block = bitcoindRpcClient.getBlock(rawTransaction.blockHash());
 		if (block == null) return null;
 
-		long blockHeight = block.height();
-		long blockIndex;
-		for (blockIndex=0; blockIndex<block.size(); blockIndex++) { if (block.tx().get((int) blockIndex).equals(chainAndTxid.getTxid())) break; }
-		if (blockIndex == block.size()) return null;
+		int blockHeight = block.height();
+		int transactionPosition;
+		for (transactionPosition=0; transactionPosition<block.size(); transactionPosition++) { if (block.tx().get(transactionPosition).equals(chainAndTxid.getTxid())) break; }
+		if (transactionPosition == block.size()) return null;
 
-		return new ChainAndBlockLocation(chainAndTxid.getChain(), blockHeight, blockIndex, chainAndTxid.getUtxoIndex());
+		return new ChainAndLocationData(chainAndTxid.getChain(), blockHeight, transactionPosition, chainAndTxid.getTxoIndex());
 	}
 
 	/*

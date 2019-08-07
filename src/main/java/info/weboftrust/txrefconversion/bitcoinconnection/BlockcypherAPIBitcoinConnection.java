@@ -11,7 +11,7 @@ import com.google.gson.Gson;
 import com.google.gson.JsonObject;
 
 import info.weboftrust.txrefconversion.Chain;
-import info.weboftrust.txrefconversion.ChainAndBlockLocation;
+import info.weboftrust.txrefconversion.ChainAndLocationData;
 import info.weboftrust.txrefconversion.ChainAndTxid;
 
 public class BlockcypherAPIBitcoinConnection extends AbstractBitcoinConnection implements BitcoinConnection {
@@ -30,23 +30,23 @@ public class BlockcypherAPIBitcoinConnection extends AbstractBitcoinConnection i
 	}
 
 	@Override
-	public ChainAndTxid lookupChainAndTxid(ChainAndBlockLocation chainAndBlockLocation) throws IOException {
+	public ChainAndTxid lookupChainAndTxid(ChainAndLocationData chainAndLocationData) throws IOException {
 
 		URI uri;
-		if (chainAndBlockLocation.getChain() == Chain.MAINNET) {
-			uri = URI.create("https://api.blockcypher.com/v1/btc/main/blocks/" + chainAndBlockLocation.getBlockHeight() + "?txstart=" + chainAndBlockLocation.getBlockIndex() + "&limit=1");
+		if (chainAndLocationData.getChain() == Chain.MAINNET) {
+			uri = URI.create("https://api.blockcypher.com/v1/btc/main/blocks/" + chainAndLocationData.getLocationData().getBlockHeight() + "?txstart=" + chainAndLocationData.getLocationData().getTransactionPosition() + "&limit=1");
 		} else {
-			uri = URI.create("https://api.blockcypher.com/v1/btc/test3/blocks/" + chainAndBlockLocation.getBlockHeight() + "?txstart=" + chainAndBlockLocation.getBlockIndex() + "&limit=1");
+			uri = URI.create("https://api.blockcypher.com/v1/btc/test3/blocks/" + chainAndLocationData.getLocationData().getBlockHeight() + "?txstart=" + chainAndLocationData.getLocationData().getTransactionPosition() + "&limit=1");
 		}
 
 		JsonObject txData = retrieveJson(uri);
 		String txid = txData.get("txids").getAsJsonArray().get(0).getAsString();
 
-		return new ChainAndTxid(chainAndBlockLocation.getChain(), txid, chainAndBlockLocation.getUtxoIndex());
+		return new ChainAndTxid(chainAndLocationData.getChain(), txid, chainAndLocationData.getLocationData().getTxoIndex());
 	}
 
 	@Override
-	public ChainAndBlockLocation lookupChainAndBlockLocation(ChainAndTxid chainAndTxid) throws IOException {
+	public ChainAndLocationData lookupChainAndLocationData(ChainAndTxid chainAndTxid) throws IOException {
 
 		URI uri;
 		if (chainAndTxid.getChain() == Chain.MAINNET) {
@@ -56,11 +56,11 @@ public class BlockcypherAPIBitcoinConnection extends AbstractBitcoinConnection i
 		}
 
 		JsonObject txData = retrieveJson(uri);
-		long blockHeight = txData.get("block_height").getAsLong();
-		long blockIndex = txData.get("block_index").getAsLong();
+		int blockHeight = txData.get("block_height").getAsInt();
+		int transactionPosition = txData.get("block_index").getAsInt();
 
-		if (blockHeight == -1 || blockIndex == -1) return null;
-		return new ChainAndBlockLocation(chainAndTxid.getChain(), blockHeight, blockIndex, chainAndTxid.getUtxoIndex());
+		if (blockHeight == -1 || transactionPosition == -1) return null;
+		return new ChainAndLocationData(chainAndTxid.getChain(), blockHeight, transactionPosition, chainAndTxid.getTxoIndex());
 	}
 
 	protected static JsonObject retrieveJson(URI uri) throws IOException {
