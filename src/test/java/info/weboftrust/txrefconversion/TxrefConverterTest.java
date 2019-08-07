@@ -110,7 +110,15 @@ public class TxrefConverterTest extends TestCase {
 			assertEquals(test[2], result.getLocationData().getBlockHeight());
 			assertEquals(test[3], result.getLocationData().getTransactionPosition());
 
-			if (test.length > 4) assertEquals(test[4], result.getLocationData().getTxoIndex());
+			if (test.length > 4) {
+
+				assertTrue(result.isExtended());
+
+				assertEquals(test[4], result.getLocationData().getTxoIndex());
+			} else {
+
+				assertFalse(result.isExtended());
+			}
 		}
 	}
 

@@ -94,6 +94,14 @@ public class ChainAndLocationData {
 		return new ChainAndLocationData(chain, locationData);
 	}
 
+	public boolean isExtended() {
+
+		if (Txref.MAGIC_BTC_MAIN_EXTENDED == this.getLocationData().getMagicCode() || Txref.MAGIC_BTC_TEST_EXTENDED == this.getLocationData().getMagicCode()) return true;
+		if (Txref.MAGIC_BTC_MAIN == this.getLocationData().getMagicCode() || Txref.MAGIC_BTC_TEST == this.getLocationData().getMagicCode()) return false;
+
+		throw new IllegalStateException("Unknown magic code: " + this.getLocationData().getMagicCode());
+	}
+
 	/*
 	 * Object methods
 	 */
