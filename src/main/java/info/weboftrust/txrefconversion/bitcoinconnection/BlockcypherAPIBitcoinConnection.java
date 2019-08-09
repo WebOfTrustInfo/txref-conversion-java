@@ -18,8 +18,6 @@ public class BlockcypherAPIBitcoinConnection extends AbstractBitcoinConnection i
 
 	private static final BlockcypherAPIBitcoinConnection instance = new BlockcypherAPIBitcoinConnection();
 
-	protected static final Gson gson = new Gson();
-
 	public BlockcypherAPIBitcoinConnection() {
 
 	}
@@ -62,6 +60,12 @@ public class BlockcypherAPIBitcoinConnection extends AbstractBitcoinConnection i
 		if (blockHeight == -1 || transactionPosition == -1) return null;
 		return new ChainAndLocationData(chainAndTxid.getChain(), blockHeight, transactionPosition, chainAndTxid.getTxoIndex());
 	}
+
+	/*
+	 * Helper methods
+	 */
+
+	protected static final Gson gson = new Gson();
 
 	protected static JsonObject retrieveJson(URI uri) throws IOException {
 
