@@ -2,7 +2,7 @@ Built a few weeks after the [BTCR Virtual Hackathon](https://github.com/WebOfTru
 
 ![RWoT Logo](https://github.com/WebOfTrustInfo/ld-signatures-java/blob/master/wot-logo.png?raw=true)
 
-Note: This library has been superseded by [btc-tx-lookup-java](https://github.com/decentralized-identity/btc-tx-lookup-java).
+Note: This library has been superseded by [btc-tx-lookup-java](https://github.com/WebOfTrustInfo/btc-tx-lookup-java).
 
 ### Information
 
